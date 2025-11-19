@@ -27,11 +27,17 @@ import customerRoutes from './routes/customers.js';
 import trailerRoutes from './routes/trailers.js';
 import documentRoutes from './routes/documents.js';
 import saleRoutes from './routes/sales.js';
+import supplierRoutes from './routes/suppliers.js';
+import purchaseRoutes from './routes/purchases.js';
+import reportRoutes from './routes/reports.js';
 
 app.use('/api/customers', customerRoutes);
 app.use('/api/trailers', trailerRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/sales', saleRoutes);
+app.use('/api/suppliers', supplierRoutes);
+app.use('/api/purchases', purchaseRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
