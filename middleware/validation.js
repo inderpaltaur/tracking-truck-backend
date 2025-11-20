@@ -96,7 +96,11 @@ const schemas = {
     date: Joi.date().required(),
     amount: Joi.number().required(),
     type: Joi.string().valid('revenue', 'expense').required(),
-    category: Joi.string().required(),
+    category: Joi.when('type', {
+      is: 'revenue',
+      then: Joi.string().valid('Transport Services', 'Trailer Lease', 'Equipment Sales', 'Other Revenue').required(),
+      otherwise: Joi.string().valid('Fuel', 'Maintenance', 'Insurance', 'Salaries', 'Office Supplies', 'Tolls', 'Repairs', 'Other Expense').required()
+    }),
     description: Joi.string().allow(''),
     staff: Joi.string().allow(''),
     trailer: Joi.string().allow(''),

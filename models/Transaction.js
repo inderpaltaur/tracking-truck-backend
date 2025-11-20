@@ -16,6 +16,10 @@ const transactionSchema = new mongoose.Schema({
   },
   category: {
     type: String,
+    enum: [
+      'Transport Services', 'Trailer Lease', 'Equipment Sales', 'Other Revenue',
+      'Fuel', 'Maintenance', 'Insurance', 'Salaries', 'Office Supplies', 'Tolls', 'Repairs', 'Other Expense'
+    ],
     required: true,
   },
   description: {
