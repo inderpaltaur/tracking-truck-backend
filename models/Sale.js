@@ -3,18 +3,20 @@ import mongoose from 'mongoose';
 const saleSchema = new mongoose.Schema({
   item: {
     type: String,
-    enum: ['truck', 'miscellaneous'],
+    enum: ['truck', 'miscellaneous', 'trailer'],
     required: true,
   },
   quantity: {
     type: Number,
-    required: true,
+    required: function() { return this.item !== 'trailer'; },
     min: 1,
+    default: function() { return this.item === 'trailer' ? 1 : undefined; }
   },
   price: {
     type: Number,
-    required: true,
+    required: function() { return this.item !== 'trailer'; },
     min: 0,
+    default: function() { return this.item === 'trailer' ? 0 : undefined; }
   },
   date: {
     type: Date,
@@ -27,8 +29,9 @@ const saleSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ['cash', 'bank', 'credit', 'other'],
-    required: true,
+    enum: ['cash', 'bank', 'credit', 'other', 'lease'],
+    required: function() { return this.item !== 'trailer'; },
+    default: function() { return this.item === 'trailer' ? 'lease' : undefined; }
   },
   notes: {
     type: String,

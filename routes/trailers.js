@@ -5,6 +5,8 @@ import {
   getTrailerById,
   createTrailer,
   updateTrailer,
+  leaseTrailer,
+  returnTrailer,
   deleteTrailer
 } from '../controllers/trailerController.js';
 import { authenticate } from '../middleware/auth.js';
@@ -17,6 +19,8 @@ router.get('/', getTrailers);
 router.get('/:id', getTrailerById);
 router.post('/', validate(schemas.trailer), createTrailer);
 router.put('/:id', validate(schemas.trailer), updateTrailer);
+router.post('/:id/lease', leaseTrailer);
+router.post('/:id/return', returnTrailer);
 router.delete('/:id', deleteTrailer);
 
 export default router;

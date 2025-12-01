@@ -214,7 +214,7 @@ const getTrailerDashboard = async (req, res) => {
     const stats = {
       total: trailers.length,
       available: trailers.filter(t => t.status === 'active').length,
-      leased: trailers.filter(t => t.status === 'inactive').length, // Assuming inactive means leased
+      leased: trailers.filter(t => t.status === 'leased').length,
       maintenance: trailers.filter(t => t.status === 'maintenance').length,
       totalValue: trailers.reduce((sum, t) => sum + t.value, 0),
       monthlyRevenue: 0 // This would need lease/rental data

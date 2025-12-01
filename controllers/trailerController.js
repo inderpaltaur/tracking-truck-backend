@@ -5,7 +5,7 @@ import Trailer from '../models/Trailer.js';
 // @access  Private
 const getTrailers = async (req, res) => {
   try {
-    const trailers = await Trailer.find().sort({ createdAt: -1 });
+    const trailers = await Trailer.find().populate('leasedTo', 'name').sort({ createdAt: -1 });
     res.json(trailers);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -66,17 +66,77 @@ const updateTrailer = async (req, res) => {
   }
 };
 
+// @desc    Lease trailer to customer
+// @route   POST /api/trailers/:id/lease
+// @access  Private
+const leaseTrailer = async (req, res) => {
+  try {
+    const { customerId, leaseStart, leaseEnd } = req.body;
+
+    const trailer = await Trailer.findById(req.params.id);
+
+    if (!trailer) {
+      return res.status(404).json({ message: 'Trailer not found' });
+    }
+
+    if (trailer.status !== 'active') {
+      return res.status(400).json({ message: 'Trailer is not available for lease' });
+    }
+
+    trailer.status = 'leased';
+    trailer.leasedTo = customerId;
+    trailer.leaseStart = new Date(leaseStart);
+    trailer.leaseEnd = new Date(leaseEnd);
+
+    await trailer.save();
+
+    const populatedTrailer = await Trailer.findById(trailer._id).populate('leasedTo', 'name');
+
+    res.json(populatedTrailer);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// @desc    Return leased trailer
+// @route   POST /api/trailers/:id/return
+// @access  Private
+const returnTrailer = async (req, res) => {
+  try {
+    const trailer = await Trailer.findById(req.params.id);
+
+    if (!trailer) {
+      return res.status(404).json({ message: 'Trailer not found' });
+    }
+
+    if (trailer.status !== 'leased') {
+      return res.status(400).json({ message: 'Trailer is not currently leased' });
+    }
+
+    trailer.status = 'active';
+    trailer.leasedTo = undefined;
+    trailer.leaseStart = undefined;
+    trailer.leaseEnd = undefined;
+
+    await trailer.save();
+
+    res.json(trailer);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // @desc    Delete trailer
 // @route   DELETE /api/trailers/:id
 // @access  Private
 const deleteTrailer = async (req, res) => {
   try {
     const trailer = await Trailer.findByIdAndDelete(req.params.id);
-    
+
     if (!trailer) {
       return res.status(404).json({ message: 'Trailer not found' });
     }
-    
+
     res.json({ message: 'Trailer deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -88,5 +148,7 @@ export {
   getTrailerById,
   createTrailer,
   updateTrailer,
+  leaseTrailer,
+  returnTrailer,
   deleteTrailer
 };

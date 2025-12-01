@@ -39,8 +39,18 @@ const trailerSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'maintenance'],
+    enum: ['active', 'inactive', 'maintenance', 'leased'],
     default: 'active',
+  },
+  leasedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+  },
+  leaseStart: {
+    type: Date,
+  },
+  leaseEnd: {
+    type: Date,
   },
 }, {
   timestamps: true,
