@@ -1,5 +1,7 @@
 import Task from '../models/Task.js';
 import Staff from '../models/Staff.js';
+import User from '../models/User.js';
+import { canAssignTaskTo } from '../config/roles.js';
 
 // @desc    Get all tasks with filters
 // @route   GET /api/tasks
@@ -160,54 +162,29 @@ const updateTaskStatus = async (req, res) => {
 
 // Helper function to check if assignment is allowed
 const checkAssignmentPermission = async (user, assignedToId) => {
-  // If user is admin, allow all assignments
-  if (user.role === 'admin') {
+  try {
+    // Find assignee's staff record to get their user
+    const assigneeStaff = await Staff.findById(assignedToId).populate('user');
+    if (!assigneeStaff || !assigneeStaff.user) {
+      return { allowed: false, message: 'Assignee not found' };
+    }
+
+    const assigneeUser = assigneeStaff.user;
+
+    // Check if assigner can assign tasks to assignee based on role hierarchy
+    const canAssign = canAssignTaskTo(user.role, assigneeUser.role);
+
+    if (!canAssign) {
+      return {
+        allowed: false,
+        message: 'You do not have permission to assign tasks to this user. You can only assign tasks to users with equal or lower role level.'
+      };
+    }
+
     return { allowed: true };
+  } catch (error) {
+    return { allowed: false, message: 'Error checking assignment permission' };
   }
-
-  // Find assigner's staff record
-  const assignerStaff = await Staff.findOne({ user: user._id });
-  if (!assignerStaff) {
-    return { allowed: false, message: 'Staff record not found for user' };
-  }
-
-  // Find assignee's staff record
-  const assigneeStaff = await Staff.findById(assignedToId);
-  if (!assigneeStaff) {
-    return { allowed: false, message: 'Assignee not found' };
-  }
-
-  // Define role hierarchy (lower number = higher rank)
-  const roleHierarchy = {
-    'Super Admin': 1,
-    'Manager': 2,
-    'Worker': 3,
-    'Staff': 3 // Alias for Worker
-  };
-
-  const assignerLevel = roleHierarchy[assignerStaff.role];
-  const assigneeLevel = roleHierarchy[assigneeStaff.role];
-
-  if (!assignerLevel || !assigneeLevel) {
-    return { allowed: false, message: 'Invalid role' };
-  }
-
-  // Super Admin can assign to anyone
-  if (assignerStaff.role === 'Super Admin') {
-    return { allowed: true };
-  }
-
-  // Manager can assign to Worker or lower (but since Worker is lowest, to Worker)
-  if (assignerStaff.role === 'Manager' && assigneeStaff.role === 'Worker') {
-    return { allowed: true };
-  }
-
-  // Worker cannot assign
-  if (assignerStaff.role === 'Worker') {
-    return { allowed: false, message: 'Workers cannot assign tasks' };
-  }
-
-  return { allowed: false, message: 'Cannot assign to higher or equal rank' };
 };
 
 export {

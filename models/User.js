@@ -18,12 +18,33 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'staff'],
-    default: 'staff',
+    enum: ['super_admin', 'admin', 'manager', 'staff'],
+    required: true,
+  },
+  approvalStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+  },
+  approvedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  approvedAt: {
+    type: Date,
+  },
+  rejectionReason: {
+    type: String,
   },
   isActive: {
     type: Boolean,
     default: true,
+  },
+  phone: {
+    type: String,
+  },
+  address: {
+    type: String,
   },
 }, {
   timestamps: true,
