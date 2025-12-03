@@ -13,9 +13,9 @@ import { validate, schemas } from '../middleware/validation.js';
 // All routes require authentication
 router.use(authenticate);
 
-// Admin only routes
-router.get('/', authorize('admin'), getStaff);
-router.post('/', authorize('admin'), validate(schemas.staff), createStaff);
+// Routes for viewing staff (admin and staff)
+router.get('/', authorize('admin', 'staff'), getStaff);
+router.post('/', authorize('admin', 'staff'), validate(schemas.staff), createStaff);
 
 // Routes accessible by admin and staff
 router.get('/:id', getStaffById);

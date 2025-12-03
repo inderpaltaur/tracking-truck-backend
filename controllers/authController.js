@@ -34,7 +34,7 @@ const register = async (req, res) => {
     if (user.role === 'staff') {
       await Staff.create({
         name: user.name,
-        role: 'Staff', // default role
+        role: 'Worker', // default role
         department: 'Operations', // default
         contact: user.email,
         user: user._id

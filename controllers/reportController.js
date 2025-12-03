@@ -2,6 +2,9 @@ import Transaction from '../models/Transaction.js';
 import Purchase from '../models/Purchase.js';
 import Sale from '../models/Sale.js';
 import Trailer from '../models/Trailer.js';
+import Task from '../models/Task.js';
+import Agreement from '../models/Agreement.js';
+import Call from '../models/Call.js';
 
 // @desc    Get staff performance report
 // @route   GET /api/reports/staff
@@ -35,12 +38,33 @@ const getStaffReport = async (req, res) => {
           .filter(t => t.type === 'expense')
           .reduce((sum, t) => sum + t.amount, 0);
 
+        // Count tasks assigned to this staff
+        const tasksCount = await Task.countDocuments({
+          assignedTo: s._id,
+          ...(dateFrom && dateTo ? createdAtFilter : {})
+        });
+
+        // Count agreements for this staff
+        const agreementsCount = await Agreement.countDocuments({
+          staff: s._id,
+          ...(dateFrom && dateTo ? createdAtFilter : {})
+        });
+
+        // Count calls for this staff
+        const callsCount = await Call.countDocuments({
+          staff: s._id,
+          ...(dateFrom && dateTo ? callDateFilter : {})
+        });
+
         return {
           staff: s.name,
           department: s.department,
           revenue,
           expenses,
-          profit: revenue - expenses
+          profit: revenue - expenses,
+          tasks: tasksCount,
+          calls: callsCount,
+          agreements: agreementsCount
         };
       })
     );
@@ -59,11 +83,14 @@ const getFinancialReport = async (req, res) => {
     const { dateFrom, dateTo } = req.query;
 
     let dateFilter = {};
+    let createdAtFilter = {};
+    let callDateFilter = {};
     if (dateFrom && dateTo) {
-      dateFilter.date = {
-        $gte: new Date(dateFrom),
-        $lte: new Date(dateTo)
-      };
+      const fromDate = new Date(dateFrom);
+      const toDate = new Date(dateTo);
+      dateFilter.date = { $gte: fromDate, $lte: toDate };
+      createdAtFilter.createdAt = { $gte: fromDate, $lte: toDate };
+      callDateFilter.callDate = { $gte: fromDate, $lte: toDate };
     }
 
     const revenueResult = await Transaction.aggregate([

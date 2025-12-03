@@ -23,6 +23,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Routes
+import authRoutes from './routes/auth.js';
 import customerRoutes from './routes/customers.js';
 import trailerRoutes from './routes/trailers.js';
 import documentRoutes from './routes/documents.js';
@@ -31,7 +32,12 @@ import supplierRoutes from './routes/suppliers.js';
 import purchaseRoutes from './routes/purchases.js';
 import reportRoutes from './routes/reports.js';
 import transactionRoutes from './routes/transactions.js';
+import staffRoutes from './routes/staff.js';
+import taskRoutes from './routes/tasks.js';
+import agreementRoutes from './routes/agreements.js';
+import callRoutes from './routes/calls.js';
 
+app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/trailers', trailerRoutes);
 app.use('/api/documents', documentRoutes);
@@ -40,6 +46,10 @@ app.use('/api/suppliers', supplierRoutes);
 app.use('/api/purchases', purchaseRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/agreements', agreementRoutes);
+app.use('/api/calls', callRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
