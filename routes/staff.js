@@ -13,13 +13,13 @@ import { validate, schemas } from '../middleware/validation.js';
 // All routes require authentication
 router.use(authenticate);
 
-// Routes for viewing staff (admin and staff)
-router.get('/', authorize('admin', 'staff'), getStaff);
-router.post('/', authorize('admin', 'staff'), validate(schemas.staff), createStaff);
+// Routes for viewing staff (super_admin, admin, manager, and staff)
+router.get('/', authorize('super_admin', 'admin', 'manager', 'staff'), getStaff);
+router.post('/', authorize('super_admin', 'admin', 'manager'), validate(schemas.staff), createStaff);
 
-// Routes accessible by admin and staff
+// Routes accessible by super_admin, admin, and manager
 router.get('/:id', getStaffById);
-router.put('/:id', authorize('admin'), validate(schemas.staff), updateStaff);
-router.delete('/:id', authorize('admin'), deleteStaff);
+router.put('/:id', authorize('super_admin', 'admin', 'manager'), validate(schemas.staff), updateStaff);
+router.delete('/:id', authorize('super_admin', 'admin'), deleteStaff);
 
 export default router;

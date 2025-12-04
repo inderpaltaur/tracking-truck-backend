@@ -18,10 +18,10 @@ router.use(authenticate);
 router.get('/', getTasks);
 router.get('/:id', getTaskById);
 
-// Routes for creating tasks (admin and staff)
-router.post('/', authorize('admin', 'staff'), createTask);
-router.put('/:id', authorize('admin'), updateTask);
-router.delete('/:id', authorize('admin'), deleteTask);
+// Routes for creating tasks (super_admin, admin, manager, and staff)
+router.post('/', authorize('super_admin', 'admin', 'manager', 'staff'), createTask);
+router.put('/:id', authorize('super_admin', 'admin', 'manager'), updateTask);
+router.delete('/:id', authorize('super_admin', 'admin', 'manager'), deleteTask);
 
 // Update status route (accessible by assigned staff and admin)
 router.patch('/:id/status', updateTaskStatus);
