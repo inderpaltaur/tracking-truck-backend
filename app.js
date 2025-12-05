@@ -36,6 +36,7 @@ import staffRoutes from './routes/staff.js';
 import taskRoutes from './routes/tasks.js';
 import agreementRoutes from './routes/agreements.js';
 import callRoutes from './routes/calls.js';
+import leasePaymentRoutes from './routes/leasePayments.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
@@ -50,6 +51,7 @@ app.use('/api/staff', staffRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/agreements', agreementRoutes);
 app.use('/api/calls', callRoutes);
+app.use('/api/lease-payments', leasePaymentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
