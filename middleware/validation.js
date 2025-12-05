@@ -153,6 +153,26 @@ const schemas = {
     customer: Joi.string().required(),
     paymentMethod: Joi.string().valid('cash', 'bank', 'credit', 'other').required(),
     notes: Joi.string().allow('')
+  }),
+
+  insurance: Joi.object({
+    trailer: Joi.string().required(),
+    provider: Joi.string().required(),
+    policyNumber: Joi.string().required(),
+    policyType: Joi.string().valid('Comprehensive', 'Liability', 'Collision', 'Physical Damage', 'Cargo', 'Other').default('Comprehensive'),
+    startDate: Joi.date().required(),
+    expiryDate: Joi.date().required(),
+    premium: Joi.number().min(0).required(),
+    premiumFrequency: Joi.string().valid('Monthly', 'Quarterly', 'Semi-Annual', 'Annual').default('Annual'),
+    coverageAmount: Joi.number().min(0),
+    deductible: Joi.number().min(0),
+    docusignEnvelopeId: Joi.string().allow(''),
+    status: Joi.string().valid('active', 'expiring', 'expired', 'cancelled').default('active'),
+    verificationStatus: Joi.string().valid('pending', 'verified', 'rejected', 'requires_update').default('pending'),
+    notifyBeforeDays: Joi.number().min(0).default(30),
+    notifyByEmail: Joi.boolean().default(true),
+    notifyBySms: Joi.boolean().default(false),
+    notes: Joi.string().allow('')
   })
 };
 
