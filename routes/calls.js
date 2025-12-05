@@ -18,9 +18,9 @@ router.get('/', getCalls);
 router.get('/stats', getCallStats);
 router.get('/:id', getCallById);
 
-// Admin only routes for full CRUD
-router.post('/', authorize('admin'), createCall);
-router.put('/:id', authorize('admin'), updateCall);
-router.delete('/:id', authorize('admin'), deleteCall);
+// Routes for managing calls (super_admin, admin, manager, staff)
+router.post('/', authorize('super_admin', 'admin', 'manager', 'staff'), createCall);
+router.put('/:id', authorize('super_admin', 'admin', 'manager', 'staff'), updateCall);
+router.delete('/:id', authorize('super_admin', 'admin', 'manager'), deleteCall);
 
 export default router;
